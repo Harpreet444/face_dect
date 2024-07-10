@@ -1,5 +1,3 @@
-opencv-python
 streamlit
-pillow
-numpy
 opencv-python-headless
+numpy
