@@ -1,5 +1,6 @@
 import streamlit as st
 from streamlit_webrtc import webrtc_streamer, WebRtcMode, VideoTransformerBase
+import cv2
 import logging
 
 # Setup logging
@@ -43,21 +44,3 @@ def app():
 
 if __name__ == "__main__":
     app()
-
-
-
-
-# import streamlit as st
-# from streamlit_webrtc import webrtc_streamer, WebRtcMode
-
-# st.title("Basic Webcam Stream")
-
-# webrtc_streamer(
-#     key="example",
-#     mode=WebRtcMode.SENDRECV,
-#     media_stream_constraints={
-#         "video": True,
-#         "audio": False
-#     }
-# )
-
