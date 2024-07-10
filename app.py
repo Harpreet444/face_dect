@@ -1,29 +1,23 @@
 import cv2
 import streamlit as st
 import numpy as np
+from streamlit_webrtc import VideoTransformerBase, webrtc_streamer
 
 st.title("Live Face Detection")
 
-run = st.checkbox('Run')
-FRAME_WINDOW = st.image([])
+class FaceDetectionTransformer(VideoTransformerBase):
+    def __init__(self):
+        self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
-camera = cv2.VideoCapture(0)
+    def transform(self, frame):
+        img = frame.to_ndarray(format="bgr24")
 
-face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        faces = self.face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5)
 
-while run:
-    ret, frame = camera.read()
-    if not ret:
-        st.write("Failed to capture image from webcam. Please check if the webcam is properly connected and permissions are granted.")
-        break
-    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    faces = face_cascade.detectMultiScale(frame, scaleFactor=1.1, minNeighbors=5)
+        for (x, y, w, h) in faces:
+            cv2.rectangle(img, (x, y), (x+w, y+h), (255, 0, 0), 2)
 
-    for (x, y, w, h) in faces:
-        cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
+        return img
 
-    FRAME_WINDOW.image(frame)
-else:
-    st.write('Stopped')
-
-camera.release()
+webrtc_streamer(key="example", video_transformer_factory=FaceDetectionTransformer)
