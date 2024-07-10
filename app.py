@@ -1,7 +1,7 @@
 import cv2
 import streamlit as st
 import numpy as np
-from streamlit_webrtc import VideoTransformerBase, webrtc_streamer
+from streamlit_webrtc import VideoTransformerBase, webrtc_streamer, WebRtcMode
 
 st.title("Live Face Detection")
 
@@ -22,9 +22,14 @@ class FaceDetectionTransformer(VideoTransformerBase):
 
 webrtc_streamer(
     key="example",
+    mode=WebRtcMode.SENDRECV,
     video_transformer_factory=FaceDetectionTransformer,
     media_stream_constraints={
         "video": True,
         "audio": False
-    }
+    },
+    async_processing=True
 )
+
+# Add a note to instruct users to allow camera access
+st.write("Please ensure that your browser has permission to access the camera. If you see a black screen, try refreshing the page or checking your camera settings.")
