@@ -10,17 +10,17 @@ st.title("Live Camera Face Detection")
 run = st.checkbox('Run')
 FRAME_WINDOW = st.image([])
 
-camera_index = 0  # Change this to 1 or 2 if you have multiple cameras
+camera_index = 0  # Change this to 1, 2, etc., if needed
 camera = cv2.VideoCapture(camera_index)
 
 if not camera.isOpened():
-    st.error(f"Error: Could not open camera with index {camera_index}.")
+    st.error(f"Error: Could not open camera with index {camera_index}. Please check the camera connection and index.")
     camera.release()
 else:
     while run:
         ret, frame = camera.read()
         if not ret:
-            st.error("Error: Failed to capture image.")
+            st.error("Error: Failed to capture image. Please ensure the camera is not being used by another application.")
             break
 
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
