@@ -14,7 +14,7 @@ camera_index = 0  # Change this to 1 or 2 if you have multiple cameras
 camera = cv2.VideoCapture(camera_index)
 
 if not camera.isOpened():
-    st.error("Error: Could not open camera.")
+    st.error(f"Error: Could not open camera with index {camera_index}.")
     camera.release()
 else:
     while run:
