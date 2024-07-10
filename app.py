@@ -10,29 +10,47 @@ st.title("Live Camera Face Detection")
 run = st.checkbox('Run')
 FRAME_WINDOW = st.image([])
 
-camera_index = 0  # Change this to 1, 2, etc., if needed
-camera = cv2.VideoCapture(camera_index)
+camera = None
 
-if not camera.isOpened():
-    st.error(f"Error: Could not open camera with index {camera_index}. Please check the camera connection and index.")
+def get_camera_index():
+    # Try to access the first few possible camera indices
+    for i in range(5):
+        cap = cv2.VideoCapture(i)
+        if cap.isOpened():
+            cap.release()
+            return i
+    return -1
+
+camera_index = get_camera_index()
+if camera_index == -1:
+    st.error("Error: Could not find a working camera. Please check your camera connection.")
+else:
+    camera = cv2.VideoCapture(camera_index)
+
+if camera is not None and not camera.isOpened():
+    st.error(f"Error: Could not open camera with index {camera_index}.")
     camera.release()
 else:
     while run:
-        ret, frame = camera.read()
-        if not ret:
-            st.error("Error: Failed to capture image. Please ensure the camera is not being used by another application.")
-            break
+        if camera is not None:
+            ret, frame = camera.read()
+            if not ret:
+                st.error("Error: Failed to capture image. Please ensure the camera is not being used by another application.")
+                break
 
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-        # Detect faces
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+            # Detect faces
+            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
 
-        # Draw rectangle around the faces
-        for (x, y, w, h) in faces:
-            cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
+            # Draw rectangle around the faces
+            for (x, y, w, h) in faces:
+                cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
 
-        FRAME_WINDOW.image(frame)
+            FRAME_WINDOW.image(frame)
+        else:
+            st.error("Error: Camera not initialized.")
 
-    camera.release()
+    if camera is not None:
+        camera.release()
