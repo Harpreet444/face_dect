@@ -20,11 +20,4 @@ class FaceDetectionTransformer(VideoTransformerBase):
 
         return img
 
-webrtc_streamer(
-    key="example",
-    video_transformer_factory=FaceDetectionTransformer,
-    media_stream_constraints={
-        "video": True,
-        "audio": False
-    }
-)
+webrtc_streamer(key="example", video_transformer_factory=FaceDetectionTransformer)
