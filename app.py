@@ -10,22 +10,29 @@ st.title("Live Camera Face Detection")
 run = st.checkbox('Run')
 FRAME_WINDOW = st.image([])
 
-camera = cv2.VideoCapture(0)
+camera_index = 0  # Change this to 1 or 2 if you have multiple cameras
+camera = cv2.VideoCapture(camera_index)
 
-while run:
-    _, frame = camera.read()
-    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-
-    # Detect faces
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
-
-    # Draw rectangle around the faces
-    for (x, y, w, h) in faces:
-        cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
-
-    FRAME_WINDOW.image(frame)
-
+if not camera.isOpened():
+    st.error("Error: Could not open camera.")
+    camera.release()
 else:
-    st.write('Stopped')
+    while run:
+        ret, frame = camera.read()
+        if not ret:
+            st.error("Error: Failed to capture image.")
+            break
+
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+        # Detect faces
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+
+        # Draw rectangle around the faces
+        for (x, y, w, h) in faces:
+            cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
+
+        FRAME_WINDOW.image(frame)
+
     camera.release()
