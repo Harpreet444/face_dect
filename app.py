@@ -13,6 +13,9 @@ face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_fronta
 
 while run:
     ret, frame = camera.read()
+    if not ret:
+        st.write("Failed to capture image from webcam. Please check if the webcam is properly connected and permissions are granted.")
+        break
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     faces = face_cascade.detectMultiScale(frame, scaleFactor=1.1, minNeighbors=5)
 
